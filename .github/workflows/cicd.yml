@@ -54,7 +54,7 @@ jobs:
         run: npm ci
 
       - name: run tests
-        run: ${{ matrix.npm_command }}
+        run: npm ${{ matrix.npm_command }}
 
       # - name: Verify code
       #   run: npm run lint
