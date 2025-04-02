@@ -24,7 +24,7 @@ jobs:
   # verifier le code avec le script lint
   # Vérifier les vulnérabilités de nos dépendences avec la commande npm audit
   # Lancer les tests avec le script test:ci
-  tests:
+  check-tests-backend:
     runs-on: ubuntu-latest
     # on précise le répertoire de travail pour ne pas le spécifier à chaque fois
     defaults:
@@ -62,6 +62,11 @@ jobs:
 
       - name: ${{ matrix.name }}
         run: npm ${{ matrix.npm_command }}
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
 
       # - name: Verify code
       #   run: npm run lint
