@@ -32,12 +32,19 @@ jobs:
         working-directory: ./server
     strategy:
       matrix:
-        npm_command:
-          [
-            "run test:ci",
-            "run lint",
-            "audit --production --audit-level=critical",
-          ]
+        # npm_command:
+        #   [
+        #     "run test:ci",
+        #     "run lint",
+        #     "audit --production --audit-level=critical",
+        #   ]
+        include:
+          - name: verify code
+            npm_command: "run lint"
+          - name: Verify vulnerabilities
+            npm_command: "audit --production --audit-level=critical"
+          - name: run tests
+            npm_command: "run test:ci"
       fail-fast: true
     steps:
       # on récupère notre repo
@@ -53,7 +60,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: run tests
+      - name: ${{ matrix.name }}
         run: npm ${{ matrix.npm_command }}
 
       # - name: Verify code
