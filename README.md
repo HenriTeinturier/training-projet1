@@ -1,0 +1,2 @@
+![Statut](https://github.com/HenriTeinturier/training-projet1/actions/workflows/cicd.yml/badge.svg)
+[![codecov](https://codecov.io/gh/HenriTeinturier/training-projet1/graph/badge.svg?token=7PM4Q8W8YB)](https://codecov.io/gh/HenriTeinturier/training-projet1)
