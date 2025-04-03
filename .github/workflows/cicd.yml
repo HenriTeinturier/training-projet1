@@ -91,7 +91,7 @@ jobs:
           path: ./client/dist
 
   test-e2e-frontend:
-    needs: build-frontend
+    needs: [build-frontend, check-tests-backend]
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -128,6 +128,7 @@ jobs:
           config: baseUrl=http://localhost:4173
 
   deploy:
+    needs: [test-e2e-frontend]
     runs-on: ubuntu-latest
     steps:
       - name: Deploy
