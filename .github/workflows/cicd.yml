@@ -11,61 +11,45 @@ on:
 
 jobs:
   check-tests-backend:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./server
+    name: ${{ matrix.name }}
     strategy:
       matrix:
         include:
           - name: verify code
-            npm_command: "run lint"
+            run-lint: true
+            run-audit: false
+            run-tests: false
+            codecov-upload: false
           - name: Verify vulnerabilities
-            npm_command: "audit --production --audit-level=critical"
+            run-lint: false
+            run-audit: true
+            run-tests: false
+            codecov-upload: false
           - name: run tests
-            npm_command: "run test:ci"
+            run-lint: false
+            run-audit: false
+            run-tests: true
+            codecov-upload: true
       fail-fast: true
-    steps: # on récupère notre repo
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Install node
-        uses: actions/setup-node@v4
-
-        with:
-          cache: "npm"
-          cache-dependency-path: "./server/package-lock.json"
-      - name: Install dependencies
-        run: npm ci
-
-      - name: ${{ matrix.name }}
-        run: npm ${{ matrix.npm_command }}
-
-      - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v5
-        if: ${{ matrix.npm_command == 'run test:ci' }}
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
+    uses: ./.github/workflows/check-test.yml
+    with:
+      working-directory: ./server
+      run-lint: ${{ matrix.run-lint }}
+      run-audit: ${{ matrix.run-audit }}
+      run-tests: ${{ matrix.run-tests }}
+      codecov-upload: ${{ matrix.codecov-upload }}
+    secrets:
+      codecov-token: ${{ secrets.CODECOV_TOKEN }}
 
   check-frontend:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./client
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Install node
-        uses: actions/setup-node@v4
-        with:
-          cache: "npm"
-          cache-dependency-path: "./client/package-lock.json"
-      - name: Install dependencies
-        run: npm ci
-      - name: Vérifie le code
-        run: npm run lint
-      - name: Vérifier les vulnérabilités
-        run: npm audit --production --audit-level=critical
+    name: Vérification du code frontend
+    uses: ./.github/workflows/check-test.yml
+    with:
+      working-directory: ./client
+      run-lint: true
+      run-audit: true
+      run-tests: false
+      codecov-upload: false
 
   build-frontend:
     runs-on: ubuntu-latest
