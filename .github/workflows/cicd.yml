@@ -1,8 +1,7 @@
 name: CI/CD workflow
 
 concurrency:
-  group: ${{ github.workflow }} 
-
+  group: ${{ github.workflow }}
 
 on:
   push:
@@ -25,7 +24,7 @@ jobs:
           - name: run tests
             npm_command: "run test:ci"
       fail-fast: true
-    steps:      # on récupère notre repo
+    steps: # on récupère notre repo
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -128,12 +127,8 @@ jobs:
           wait-on-timeout: 60
           config: baseUrl=http://localhost:4173
 
-
- # pour le job deploy verra plus tard
   deploy:
-    # on veut que le deploy ne s'execute que si les tests sont passés
     runs-on: ubuntu-latest
     steps:
-	    # on fera çà à la fin
       - name: Deploy
         run: echo "deploiement à venir"
