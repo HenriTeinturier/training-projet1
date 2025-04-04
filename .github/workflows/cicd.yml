@@ -15,17 +15,17 @@ jobs:
     strategy:
       matrix:
         include:
-          - name: verify code
+          - name: verify code backend
             run-lint: true
             run-audit: false
             run-tests: false
             codecov-upload: false
-          - name: Verify vulnerabilities
+          - name: Verify vulnerabilities backend
             run-lint: false
             run-audit: true
             run-tests: false
             codecov-upload: false
-          - name: run tests
+          - name: tests unitaires backend
             run-lint: false
             run-audit: false
             run-tests: true
@@ -42,7 +42,7 @@ jobs:
       codecov-token: ${{ secrets.CODECOV_TOKEN }}
 
   check-frontend:
-    name: Vérification du code frontend
+    name: tests frontend
     uses: ./.github/workflows/check-test.yml
     with:
       working-directory: ./client
@@ -60,15 +60,15 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Install node
-        uses: actions/setup-node@v4
+
+      - name: Setup Node.js project
+        uses: ./.github/actions/setup-node-project
         with:
-          cache: "npm"
-          cache-dependency-path: "./client/package-lock.json"
-      - name: Install dependencies
-        run: npm ci
+          working-directory: ./client
+
       - name: Build application frontend
         run: npm run build
+
       - name: Upload build frontend
         uses: actions/upload-artifact@v4
         with:
@@ -84,24 +84,23 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Install node
-        uses: actions/setup-node@v4
+
+      - name: Setup Node.js project
+        uses: ./.github/actions/setup-node-project
         with:
-          cache: "npm"
-          cache-dependency-path: "**/package-lock.json"
-      - name: Install dependencies
-        run: |
-          cd server
-          npm ci
+          working-directory: ./server
+
       - name: Download build frontend
         uses: actions/download-artifact@v4
         with:
           name: build-frontend
           path: ./client/dist
+
       - name: Start backend
         run: |
           cd server
           npm start &
+
       - name: Start e2e tests
         uses: cypress-io/github-action@v6
         with:

@@ -1,0 +1,42 @@
+name: 'Setup Node.js Project'
+description: 'Configure Node.js et installe les dépendances pour un projet'
+
+inputs:
+  working-directory:
+    description: "Répertoire de travail pour l'installation"
+    required: false
+    default: '.'
+  node-version:
+    description: 'Version de Node.js à utiliser'
+    required: false
+    default: '22'
+  package-manager:
+    description: 'Gestionnaire de paquets à utiliser (npm, yarn, pnpm)'
+    required: false
+    default: 'npm'
+  cache-key:
+    description: 'Clé de cache à utiliser'
+    required: false
+    default: 'npm'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install node
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: ${{ inputs.cache-key }}
+        cache-dependency-path: "${{ inputs.working-directory }}/package-lock.json"
+
+    - name: Install dependencies
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        if [ "${{ inputs.package-manager }}" = "npm" ]; then
+          npm ci
+        elif [ "${{ inputs.package-manager }}" = "yarn" ]; then
+          yarn install --frozen-lockfile
+        elif [ "${{ inputs.package-manager }}" = "pnpm" ]; then
+          pnpm install --frozen-lockfile
+        fi 
