@@ -42,14 +42,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install node
-        uses: actions/setup-node@v4
+      - name: Setup Node.js project
+        uses: ./.github/actions/setup-node-project
         with:
-          cache: "npm"
-          cache-dependency-path: "${{ inputs.working-directory }}/package-lock.json"
-
-      - name: Install dependencies
-        run: npm ci
+          working-directory: ${{ inputs.working-directory }}
 
       - name: Vérification du code
         if: ${{ inputs.run-lint }}
